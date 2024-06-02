@@ -1,0 +1,10 @@
+[
+  {
+    "MaschineName":"M001",
+    "Cost": 40
+  },
+  {
+    "MaschineName":"M002",
+    "Cost": 60
+  }
+]

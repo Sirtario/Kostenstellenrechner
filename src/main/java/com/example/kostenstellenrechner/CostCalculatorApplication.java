@@ -16,9 +16,6 @@ public class CostCalculatorApplication extends Application {
         stage.setTitle("Hello!");
         stage.setScene(scene);
         stage.show();
-
-        JSONFileHandler fileHandler = new JSONFileHandler();
-        List<CurrentData> data = fileHandler.deseriseCurrentData("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/currentdata.json");
     }
 
     public static void main(String[] args) {
