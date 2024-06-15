@@ -7,7 +7,11 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainViewController {
@@ -26,14 +30,19 @@ public class MainViewController {
     @FXML
     private TableView DataTable;
 
+    private List<CurrentData> livedata;
+    private List<CurrentData> filteredData = new ArrayList<>();
+
+    private List<Machine> machinesdata;
+
     @FXML
     public void initialize()
     {
         UntilDatePicker.setValue(LocalDate.now());
 
         JSONFileHandler fileHandler = new JSONFileHandler();
-        List<CurrentData> livedata = List.of();
-        List<Machine> machinesdata = List.of();
+        livedata = List.of();
+        machinesdata = List.of();
         try {
             livedata = fileHandler.deseriseCurrentData("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/currentdata.json");
             machinesdata = fileHandler.deseriseMaschine("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/Maschines.json");
@@ -57,6 +66,8 @@ public class MainViewController {
 
         TableColumn<DataFX, String> toColumn = new TableColumn<>("To");
         toColumn.setCellValueFactory(new PropertyValueFactory<>("toDate"));
+
+        DataTable.getColumns().clear();
 
         DataTable.getColumns().addAll(nameColumn, fromColumn, toColumn);
 
@@ -98,5 +109,25 @@ public class MainViewController {
         alert.setContentText(errorMessage);
 
         alert.showAndWait();
+    }
+
+    @FXML
+    private void FilterBydate()
+    {
+        filteredData.clear();
+
+        LocalDate fromdate = FromDatePicker.getValue();
+        LocalDate todate = UntilDatePicker.getValue();
+        Instant instantFrom = Instant.from(fromdate.atStartOfDay(ZoneId.systemDefault()));
+        Instant instandTo = Instant.from(todate.atStartOfDay(ZoneId.systemDefault()));
+        for (CurrentData data : livedata) {
+            if (data.beginn.after(Date.from(instantFrom)) && data.end.before(Date.from(instandTo)))
+            {
+                filteredData.add(data);
+            }
+        }
+
+        ObservableList<DataFX> dataFX = ConvertToObservableListData(filteredData);
+        PopulateDataView(dataFX);
     }
 }
