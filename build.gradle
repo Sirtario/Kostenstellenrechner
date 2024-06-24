@@ -26,7 +26,7 @@ tasks.withType(JavaCompile) {
 
 application {
     mainModule = 'com.example.kostenstellenrechner'
-    mainClass = 'com.example.kostenstellenrechner.HelloApplication'
+    mainClass = 'com.example.kostenstellenrechner.CostCalculatorApplication'
 }
 
 javafx {
@@ -59,4 +59,14 @@ jlink {
 
 jlinkZip {
     group = 'distribution'
+}
+
+task customFatJar(type: Jar) {
+    manifest {
+        attributes 'Main-Class': application.mainClass
+    }
+    archiveBaseName = 'all-in-one-jar'
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
 }

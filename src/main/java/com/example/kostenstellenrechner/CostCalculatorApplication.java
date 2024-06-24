@@ -12,8 +12,8 @@ public class CostCalculatorApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(CostCalculatorApplication.class.getResource("MainView.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
-        stage.setTitle("Hello!");
+        Scene scene = new Scene(fxmlLoader.load(), 520, 240);
+        stage.setTitle("Machinenkostenrechner");
         stage.setScene(scene);
         stage.show();
     }

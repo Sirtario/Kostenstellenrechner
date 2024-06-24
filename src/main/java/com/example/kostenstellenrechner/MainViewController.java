@@ -7,14 +7,15 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 public class MainViewController {
+    @FXML
+    private ListView ResultList;
     @FXML
     private DatePicker UntilDatePicker;
 
@@ -118,6 +119,14 @@ public class MainViewController {
 
         LocalDate fromdate = FromDatePicker.getValue();
         LocalDate todate = UntilDatePicker.getValue();
+
+        if (fromdate == null) {
+            fromdate = LocalDate.now().minusYears(1);
+        }
+        if (todate == null) {
+            todate = LocalDate.now();
+        }
+
         Instant instantFrom = Instant.from(fromdate.atStartOfDay(ZoneId.systemDefault()));
         Instant instandTo = Instant.from(todate.atStartOfDay(ZoneId.systemDefault()));
         for (CurrentData data : livedata) {
@@ -129,5 +138,46 @@ public class MainViewController {
 
         ObservableList<DataFX> dataFX = ConvertToObservableListData(filteredData);
         PopulateDataView(dataFX);
+    }
+
+    @FXML
+    private void CalculateCost()
+    {
+        Map<String,Long> DurationPerMachine = new HashMap<>();
+
+        DurationPerMachine = DurationCalculation(DurationPerMachine);
+
+        ObservableList<String> results = FXCollections.observableArrayList();
+
+        for (Machine machine : machinesdata) {
+            long duration = DurationPerMachine.get(machine.MaschineName);
+            float cost = duration * machine.Cost;
+            results.add(machine.MaschineName + ": " + cost+"€");
+        }
+
+        ResultList.setItems(results);
+    }
+
+    private Map<String, Long> DurationCalculation(Map<String, Long> DurationPerMachine) {
+        if (filteredData.isEmpty())
+        {
+            FilterBydate();
+        }
+
+        for (Machine machine : machinesdata) {
+
+            Long duration = 0l;
+
+            for (CurrentData data : filteredData) {
+                if (machine.MaschineName.equals( data.Maschine))
+                {
+                    long durationPerEntry = Duration.between(data.beginn.toInstant(),data.end.toInstant()).toHours();
+                    duration += durationPerEntry;
+                }
+            }
+
+            DurationPerMachine.put(machine.MaschineName,duration);
+        }
+        return DurationPerMachine;
     }
 }
