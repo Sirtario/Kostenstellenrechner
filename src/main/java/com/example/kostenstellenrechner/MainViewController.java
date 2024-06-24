@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.FileChooser;
 
 import java.io.IOException;
 import java.time.Duration;
@@ -31,6 +32,7 @@ public class MainViewController {
     @FXML
     private TableView DataTable;
 
+    private JSONFileHandler fileHandler;
     private List<CurrentData> livedata;
     private List<CurrentData> filteredData = new ArrayList<>();
 
@@ -41,12 +43,12 @@ public class MainViewController {
     {
         UntilDatePicker.setValue(LocalDate.now());
 
-        JSONFileHandler fileHandler = new JSONFileHandler();
+        fileHandler = new JSONFileHandler();
         livedata = List.of();
         machinesdata = List.of();
         try {
-            livedata = fileHandler.deseriseCurrentData("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/currentdata.json");
-            machinesdata = fileHandler.deseriseMaschine("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/Maschines.json");
+            LoadLiveDataFromFile("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/currentdata.json");
+            LoadMachinesDataFromFile("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/Maschines.json");
         } catch (IOException e) {
 
             showErrorPopup(e.getMessage());
@@ -56,6 +58,14 @@ public class MainViewController {
         ObservableList<DataFX> data = ConvertToObservableListData(livedata);
         PopulateMachinesView(machines);
         PopulateDataView(data);
+    }
+
+    private void LoadMachinesDataFromFile(String filePath) throws IOException {
+        machinesdata = fileHandler.deseriseMaschine(filePath);
+    }
+
+    private void LoadLiveDataFromFile(String filePath) throws IOException {
+        livedata = fileHandler.deseriseCurrentData(filePath);
     }
 
     private void PopulateDataView(ObservableList<DataFX> data) {
@@ -179,5 +189,33 @@ public class MainViewController {
             DurationPerMachine.put(machine.MaschineName,duration);
         }
         return DurationPerMachine;
+    }
+
+    @FXML
+    private void LoadCurrentData(){
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extensionFilter);
+
+        String fileName = fileChooser.showOpenDialog(DataTable.getScene().getWindow()).getPath();
+        try {
+            LoadLiveDataFromFile(fileName);
+        } catch (IOException e) {
+            showErrorPopup(e.getMessage());
+        }
+
+    }
+    @FXML
+    private void LoadMachinesData(){
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter("JSON files (*.json)", "*.json");
+        fileChooser.getExtensionFilters().add(extensionFilter);
+
+        String fileName = fileChooser.showOpenDialog(DataTable.getScene().getWindow()).getPath();
+        try {
+            LoadMachinesDataFromFile(fileName);
+        } catch (IOException e) {
+            showErrorPopup(e.getMessage());
+        }
     }
 }

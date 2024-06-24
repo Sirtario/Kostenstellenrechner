@@ -20,7 +20,12 @@
      <menus>
        <Menu mnemonicParsing="false" text="File">
          <items>
-           <MenuItem mnemonicParsing="false" text="Import" />
+               <Menu mnemonicParsing="false" text="Import">
+                 <items>
+                   <MenuItem fx:id="MachiesInport" mnemonicParsing="false" onAction="#LoadMachinesData" text="Machinen" />
+                 <MenuItem fx:id="LoadCurrentData" mnemonicParsing="false" onAction="#LoadCurrentData" text="Ist-Daten" />
+                 </items>
+               </Menu>
          </items>
        </Menu>
        <Menu mnemonicParsing="false" text="Edit">
