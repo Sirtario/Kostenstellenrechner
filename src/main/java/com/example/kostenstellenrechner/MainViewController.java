@@ -46,18 +46,7 @@ public class MainViewController {
         fileHandler = new JSONFileHandler();
         livedata = List.of();
         machinesdata = List.of();
-        try {
-            LoadLiveDataFromFile("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/currentdata.json");
-            LoadMachinesDataFromFile("/Users/phillipeckstein/Code/Kostenstellenrechner/src/main/resources/com/example/kostenstellenrechner/Maschines.json");
-        } catch (IOException e) {
 
-            showErrorPopup(e.getMessage());
-        }
-
-        ObservableList<MachineFX> machines = ConvertToObservableListMachines(machinesdata);
-        ObservableList<DataFX> data = ConvertToObservableListData(livedata);
-        PopulateMachinesView(machines);
-        PopulateDataView(data);
     }
 
     private void LoadMachinesDataFromFile(String filePath) throws IOException {
@@ -204,6 +193,9 @@ public class MainViewController {
             showErrorPopup(e.getMessage());
         }
 
+        ObservableList<DataFX> data = ConvertToObservableListData(livedata);
+        PopulateDataView(data);
+
     }
     @FXML
     private void LoadMachinesData(){
@@ -217,5 +209,8 @@ public class MainViewController {
         } catch (IOException e) {
             showErrorPopup(e.getMessage());
         }
+
+        ObservableList<MachineFX> machines = ConvertToObservableListMachines(machinesdata);
+        PopulateMachinesView(machines);
     }
 }
